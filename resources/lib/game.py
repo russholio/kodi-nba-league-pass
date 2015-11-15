@@ -16,6 +16,7 @@ class Game():
     self.comment = comment
     self.season = season
     self.weekStart = None
+    self.feeds = feeds
     if startTime:
       self.startTime = gameTime(startTime)
     if endTime:

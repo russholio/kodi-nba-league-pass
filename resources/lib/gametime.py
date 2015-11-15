@@ -138,18 +138,18 @@ class GameTime():
         # Live Game
         for g in liveGames:
             item = generateGameItem(g, 'LIVE: %s @ %s' % (g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s?team=%s' % (self.pluginBase, g.season, g.weekStart, g.id, self.myTeam.id), listitem=item, isFolder=True)
 
         # Past 7 days of games
         for g in pastGames:
-            print 'grrr', self.handle, self.plugin
             item = generateGameItem(g, 'REPLAY [%s]: %s @ %s' % (gameDateToString(g.startTime), g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s?team=%s' % (self.pluginBase, g.season, g.weekStart, g.id, self.myTeam.id), listitem=item, isFolder=True)
+            print '%s/play/%s/%s/%s?team=%s' % (self.pluginBase, g.season, g.weekStart, g.id, self.myTeam.id)
 
         # Next 7 days of upcoming games as placeholders
         for g in games:
             item = generateGameItem(g, 'FUTURE [%s]: %s @ %s' % (gameTimeToString(g.scheduledTime), g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.handle)
 
@@ -170,7 +170,7 @@ class GameTime():
         # Live Game
         for g in liveGames:
             item = generateGameItem(g, 'LIVE: %s @ %s' % (g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
 
         # Next 7 days of upcoming games as placeholders
         for g in upcoming:
@@ -181,31 +181,77 @@ class GameTime():
         xbmcplugin.endOfDirectory(self.handle)
 
     def toppicks(self):
-        now = myNow()
+        now = estNow()
+        yesterday = subtractDay(now)
         monday = toMondayOfWeek(now)
 
         games = []
+        games.extend(NeuLion.getGames(subtractWeek(monday)))
         games.extend(NeuLion.getGames(monday))
 
-        games = Game.extractPastGames(now, games)
-        topGames = Game.extractTopPicks(now, games)
+        recentGames = [];
+        for g in games:
+            if g.scheduledTime > yesterday and g.scheduledTime < now:
+                recentGames.append(g)
 
-        print topGames
+        topGames = Game.extractTopPicks(now, recentGames)
 
         # Live Game
         for g in topGames:
             item = generateGameItem(g, 'REPLAY [%s]: %s @ %s' % (gameDateToString(g.startTime), g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url=self.plugin+'/playLiveTV', listitem=item, isFolder=True)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+
+        xbmcplugin.endOfDirectory(self.handle)
+
+    def past24hours(self):
+        now = estNow()
+        yesterday = subtractDay(now)
+        monday = toMondayOfWeek(now)
+
+        games = []
+        games.extend(NeuLion.getGames(subtractWeek(monday)))
+        games.extend(NeuLion.getGames(monday))
+
+        recentGames = [];
+        for g in games:
+            if g.scheduledTime > yesterday and g.scheduledTime < now:
+                recentGames.append(g)
+
+        # Live Game
+        for g in recentGames:
+            item = generateGameItem(g, 'REPLAY [%s]: %s @ %s' % (gameDateToString(g.startTime), g.visitors.name, g.homeTeam.name))
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+
+        xbmcplugin.endOfDirectory(self.handle)
+
+    def past7days(self):
+        now = estNow()
+        lastweek = subtractWeek(now)
+        monday = toMondayOfWeek(now)
+
+        games = []
+        games.extend(NeuLion.getGames(subtractWeek(monday)))
+        games.extend(NeuLion.getGames(monday))
+
+        recentGames = [];
+        for g in games:
+            if g.scheduledTime > lastweek and g.scheduledTime < now:
+                recentGames.append(g)
+
+        # Live Game
+        for g in recentGames:
+            item = generateGameItem(g, 'REPLAY [%s]: %s @ %s' % (gameDateToString(g.startTime), g.visitors.name, g.homeTeam.name))
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.handle)
 
     def execute(self):
-        print self.plugin
-        match = re.search('(plugin://[^/]+/gametime)/([^/]+)(/([^/]+)/([^/]+)/([^/]+))?$', self.plugin)
+        print 'plugin:', self.plugin
+        match = re.search('(plugin://[^/]+/gametime)/([^/?]+)(/([^/?]+)/([^/?]+)/([^/?]+))?$', self.plugin)
 
         if match:
             self.pluginBase = match.group(1)
-            print match.lastgroup, match.group(4), match.group(5), match.group(6)
+            print self.handle, match.group(4), match.group(5), match.group(6)
             if match.group(2) == 'myteam':
                 self.myteam()
             elif match.group(2) == 'livegames':
@@ -213,9 +259,9 @@ class GameTime():
             elif match.group(2) == 'toppicks':
                 self.toppicks()
             elif match.group(2) == 'past24hours':
-                NBATVLive.execute()
+                self.past24hours()
             elif match.group(2) == 'past7days':
-                playLiveTV()
+                self.past7days()
             elif match.group(2) == 'season':
                 NBATVLive.execute()
             elif match.group(2) == 'play' and match.lastindex == 3:
@@ -225,17 +271,33 @@ class GameTime():
                 if not video_url:
                     log("no working video_url found error", xbmc.LOGDEBUG)
 
-                title = '%s @ %s' % (g.visitors.name, g.homeTeam.name)
-                if int(g.status) == 1:
-                  title = 'LIVE: %s' % title
-                else:
-                  title = 'REPLAY: %s' % title
+                if (self.handle > -1):
+                    print g.feeds
+                    item = generateGameItem(g, 'Home feed (default)')
+                    xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s?type=1' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item)
+                    if g.feeds.get('af'):
+                        item = generateGameItem(g, 'Away feed')
+                        xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s?type=4' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+                    if g.feeds.get('c'):
+                        item = generateGameItem(g, 'Condensed feed')
+                        xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/play/%s/%s/%s?type=8' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
 
-                item = xbmcgui.ListItem(label=title)
-                item.setInfo('video', {'Title': title, 'Genre': 'Sports'})
+                    xbmcplugin.endOfDirectory(self.handle)
 
-                xbmcplugin.setResolvedUrl(handle=self.handle, succeeded=True, listitem=item)
-                xbmc.Player().play(video_url, item)
+                if self.handle == -1 or self.params:
+                    title = '%s @ %s' % (g.visitors.name, g.homeTeam.name)
+                    if int(g.status) == 1:
+                      title = 'LIVE: %s' % title
+                    else:
+                      title = 'REPLAY: %s' % title
+
+
+                    item = xbmcgui.ListItem(label=title)
+                    item.setInfo('video', {'Title': title, 'Genre': 'Sports'})
+
+                    xbmcplugin.setResolvedUrl(handle=self.handle, succeeded=True, listitem=item)
+                    xbmc.Player().play(video_url, item)
+                    print self.params
 
             # elif mode == "archive":
             #     archiveMenu()
