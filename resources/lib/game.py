@@ -72,7 +72,7 @@ class Game():
     i = 0
     while i < len(a):
       g = a[i]
-      if (g.periods > 4) or (abs(g.homeScore - g.visitorScore) < 10):
+      if (g.periods > 4) or (abs(g.homeScore - g.visitorScore) < 6):
         topGames.append(a.pop(i))
       else:
         i += 1
