@@ -6,8 +6,8 @@ class NeuLion():
   def __init__(self):
     self.session = requests.Session()
 
-  def getGame(self, season, weekStart, id):
-    games = self.getGamesForWeek(season, weekStart)
+  def getGame(self, year, weekStart, id):
+    games = self.getGamesForWeek(year, weekStart)
 
     for g in games:
       if g.id == id:
@@ -16,8 +16,8 @@ class NeuLion():
   def getGames(self, dt):
     return self.getGamesForWeek(dt.year, '%d_%d' % (dt.month, dt.day))
 
-  def getGamesForWeek(self, season, weekStart):
-    url = 'http://smb.cdnak.neulion.com/fs/nba/feeds_s2012/schedule/%s/%s.js' % (season, weekStart)
+  def getGamesForWeek(self, year, weekStart):
+    url = 'http://smb.cdnak.neulion.com/fs/nba/feeds_s2012/schedule/%s/%s.js' % (year, weekStart)
     params = {'t': myNow().time()}
 
     try:
@@ -28,6 +28,7 @@ class NeuLion():
       weekStart = weekStart
       for g in games:
         g.weekStart = weekStart
+        g.year = year
       return games
     except requests.exceptions.HTTPError as e:
       print 'NBA League Pass - Error logging in: %s' % str(e)

@@ -138,18 +138,18 @@ class GameTime():
         # Live Game
         for g in liveGames:
             item = generateGameItem(g, 'LIVE: %s @ %s' % (g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s?team=%s' % (self.pluginBase, g.season, g.weekStart, g.id, self.myTeam.id), listitem=item, isFolder=True)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s?team=%s' % (self.pluginBase, g.year, g.weekStart, g.id, self.myTeam.id), listitem=item, isFolder=True)
 
         # Past 7 days of games
         for g in pastGames:
             item = generateGameItem(g, 'REPLAY [%s]: %s @ %s' % (gameDateToString(g.startTime), g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s?team=%s' % (self.pluginBase, g.season, g.weekStart, g.id, self.myTeam.id), listitem=item, isFolder=True)
-            print '%s/game/%s/%s/%s?team=%s' % (self.pluginBase, g.season, g.weekStart, g.id, self.myTeam.id)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s?team=%s' % (self.pluginBase, g.year, g.weekStart, g.id, self.myTeam.id), listitem=item, isFolder=True)
+            print '%s/game/%s/%s/%s?team=%s' % (self.pluginBase, g.year, g.weekStart, g.id, self.myTeam.id)
 
         # Next 7 days of upcoming games as placeholders
         for g in games:
             item = generateGameItem(g, 'FUTURE [%s]: %s @ %s' % (gameTimeToString(g.scheduledTime), g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.year, g.weekStart, g.id), listitem=item, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.handle)
 
@@ -170,7 +170,7 @@ class GameTime():
         # Live Game
         for g in liveGames:
             item = generateGameItem(g, 'LIVE: %s @ %s' % (g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.year, g.weekStart, g.id), listitem=item, isFolder=True)
 
         # Next 7 days of upcoming games as placeholders
         for g in upcoming:
@@ -199,7 +199,7 @@ class GameTime():
         # Live Game
         for g in topGames:
             item = generateGameItem(g, 'REPLAY [%s]: %s @ %s' % (gameDateToString(g.startTime), g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.year, g.weekStart, g.id), listitem=item, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.handle)
 
@@ -220,7 +220,7 @@ class GameTime():
         # Live Game
         for g in recentGames:
             item = generateGameItem(g, 'REPLAY [%s]: %s @ %s' % (gameDateToString(g.startTime), g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.year, g.weekStart, g.id), listitem=item, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.handle)
 
@@ -241,7 +241,7 @@ class GameTime():
         # Live Game
         for g in recentGames:
             item = generateGameItem(g, 'REPLAY [%s]: %s @ %s' % (gameDateToString(g.startTime), g.visitors.name, g.homeTeam.name))
-            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.season, g.weekStart, g.id), listitem=item, isFolder=True)
+            xbmcplugin.addDirectoryItem(handle=self.handle, url='%s/game/%s/%s/%s' % (self.pluginBase, g.year, g.weekStart, g.id), listitem=item, isFolder=True)
 
         xbmcplugin.endOfDirectory(self.handle)
 
@@ -268,7 +268,7 @@ class GameTime():
                 g = NeuLion.getGame(match.group(4), match.group(5), match.group(6))
                 print g
 
-                print g.feeds
+                print g.status, g.feeds
                 homeItem = generateGameItem(g, 'Home feed (default)')
                 xbmcplugin.addDirectoryItem(handle=self.handle, url=getGameFeedUrl(g), listitem=homeItem)
                 if g.feeds.get('af'):
