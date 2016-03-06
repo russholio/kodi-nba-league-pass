@@ -1,10 +1,13 @@
 import requests
 from utils import *
 from game import Game
+from common import *
+
+import urlparse
 
 class NeuLion():
   def __init__(self):
-    self.session = requests.Session()
+    self.session = getSession()
 
   def getGame(self, year, weekStart, id):
     games = self.getGamesForWeek(year, weekStart)

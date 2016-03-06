@@ -10,5 +10,6 @@
     <setting id="debug" type="enum" label="50005" values="on|off" default="1" />
     <setting id="fanart_image" type="text" label="50006" visible="false" default=""/>
     <setting id="my_team" type="select" label="50008" values="None|Blazers|Bucks|Bulls|Cavaliers|Celtics|Clippers|Grizzlies|Hawks|Heat|Hornets|Jazz|Kings|Knicks|Lakers|Magic|Mavericks|Nets|Nuggets|Pacers|Pelicans|Pistons|Raptors|Rockets|Sixers|Spurs|Suns|Thunder|Timberwolves|Warriors|Wizards" default="None"/>
+    <setting id="device_emulation" type="select" label="50009" values="Chrome|Firefox|iPhone|AppleTV" default="Chrome"/>
   </category>
 </settings>

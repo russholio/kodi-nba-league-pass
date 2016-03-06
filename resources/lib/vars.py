@@ -13,6 +13,8 @@ addonName = 'plugin.video.russ-ba'
 settings = xbmcaddon.Addon(id=addonName)
 scores = settings.getSetting(id="scores")
 debug = settings.getSetting(id="debug")
+device_emulation = settings.getSetting(id="device_emulation")
+user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36'
 use_local_timezone = settings.getSetting(id="local_timezone") == "0"
 
 # map the quality_id to a video height

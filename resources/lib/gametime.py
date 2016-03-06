@@ -3,6 +3,7 @@ import time
 import requests
 
 import urllib,urllib2
+import urlparse
 import xbmc,xbmcplugin,xbmcgui
 from xml.dom.minidom import parseString
 import os, re
@@ -36,7 +37,8 @@ class GameTime():
     def __init__(self):
         self.plugin = sys.argv[0]
         self.handle = int(sys.argv[1])
-        self.params = sys.argv[2]
+        self.params = urlparse.parse_qs(sys.argv[2][1:])
+        print self.params
         self.pluginBase = sys.argv[0]
 
         self.session = requests.Session()
@@ -279,10 +281,16 @@ class GameTime():
                     xbmcplugin.addDirectoryItem(handle=self.handle, url=getGameFeedUrl(g, 'condensed'), listitem=condensedItem)
 
                 if (self.handle > -1):
+                    print 'list folder'
                     xbmcplugin.endOfDirectory(self.handle)
 
                 if self.handle == -1 or self.params:
+                    print 'play stream'
                     item = homeItem
+
+                    # Select away feed if team selection was passed as parameter
+                    if g.feeds.get('af') and g.visitors.id == self.params['team'][0]:
+                      item = awayItem
 
                     title = '%s @ %s' % (g.visitors.name, g.homeTeam.name)
                     if int(g.status) == 1:
@@ -338,6 +346,9 @@ def getGameFeedUrl(game, feedPreference='home'):
         'User-Agent': 'iPad' if game.status == 1
             else "AppleCoreMedia/1.0.0.8C148a (iPad; U; CPU OS 6_2_1 like Mac OS X; en_us)",
     }
+
+    headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36'
+    headers['User-Agent'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4'
 
     body = {
         'extid': game.id,

@@ -26,7 +26,7 @@ class LeaguePass:
     def menu(self):
         # Game Time
         image = os.path.join(vars.media_dir, 'images', 'nba_espn.png')
-        item = xbmcgui.ListItem('Game Time')
+        item = xbmcgui.ListItem('Games')
         item.setArt({'thumb': image, 'fanart': vars.fanart_image})
         item.setIconImage(image)
 

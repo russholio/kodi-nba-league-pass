@@ -54,6 +54,12 @@ class NBAServiceBadLogin(NBAServiceError):
         self.username = username
         self.password = password
 
+def getSession():
+    if vars.session:
+        return vars.session()
+    else:
+        return login()
+
 def login():
     username = vars.settings.getSetting(id="username")
     password = vars.settings.getSetting(id="password")
